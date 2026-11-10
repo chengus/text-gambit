@@ -1,5 +1,11 @@
 export const html = __PAGE_HTML__;
 
+const logo = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 33 33">
+  <rect width="33" height="33" rx="9" fill="#0068da"/>
+  <path fill="#fff" d="M13 7l3 2c5.5 0 8 5 8 10v6H10v-2c0-3 2.4-5.3 5-7l-2 1-2.4-.5-2.1 1.1L7 15l6-5.6V7z"/>
+  <circle cx="14.5" cy="12.5" r=".9" fill="#0068da"/>
+</svg>`;
+
 const MAX_BODY_BYTES = 48_000;
 const TOO_LARGE = Symbol("oversized request");
 const MAX_TURNS = 40;
@@ -147,6 +153,11 @@ function openRouterError(status, retryAfter) {
 
 export async function handle(request, env = {}) {
   const { pathname } = new URL(request.url);
+  if (pathname === "/logo.svg" && request.method === "GET") {
+    return new Response(logo, {
+      headers: { ...responseHeaders, "content-type": "image/svg+xml; charset=utf-8" },
+    });
+  }
   if (pathname === "/" && request.method === "GET") {
     return new Response(html, {
       headers: { ...responseHeaders, "content-type": "text/html; charset=utf-8" },

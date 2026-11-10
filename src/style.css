@@ -61,17 +61,6 @@ header { border-bottom: 1px solid #ffffff14; }
   letter-spacing: .01em;
 }
 
-.logo {
-  display: grid;
-  place-items: center;
-  width: 33px;
-  height: 33px;
-  border-radius: 9px;
-  background: var(--blue-fill);
-  color: #fff;
-  font-size: 21px;
-}
-
 .layout {
   display: grid;
   gap: 16px;
