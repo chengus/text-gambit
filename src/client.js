@@ -256,7 +256,26 @@ byId("reset").addEventListener("click", loadSample);
 previous.addEventListener("click", () => step(-1));
 next.addEventListener("click", () => step(1));
 
+const helpDialog = byId("helpDialog");
+const formatPrompt = byId("formatPrompt");
+const copyStatus = byId("copyStatus");
+byId("openHelp").addEventListener("click", () => {
+  copyStatus.textContent = "";
+  helpDialog.showModal();
+});
+byId("copyPrompt").addEventListener("click", async () => {
+  try {
+    await navigator.clipboard.writeText(formatPrompt.value);
+    copyStatus.textContent = "Copied.";
+  } catch {
+    formatPrompt.focus();
+    formatPrompt.select();
+    copyStatus.textContent = "Prompt selected. Copy it with your keyboard.";
+  }
+});
+
 document.addEventListener("keydown", (event) => {
+  if (helpDialog.open) return;
   if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
   if (event.defaultPrevented || event.isComposing || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
   const target = event.target;

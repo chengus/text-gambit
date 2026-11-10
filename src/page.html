@@ -78,6 +78,34 @@
         </section>
       </div>
     </main>
+    <button type="button" class="btn help-toggle" id="openHelp" aria-haspopup="dialog" aria-controls="helpDialog">Help</button>
+    <dialog class="help-dialog card" id="helpDialog" aria-labelledby="helpTitle">
+      <div class="help-head">
+        <h2 id="helpTitle">Format your chat</h2>
+        <form method="dialog">
+          <button class="btn secondary" aria-label="Close help" autofocus>×</button>
+        </form>
+      </div>
+      <p>Copy this prompt into your AI and fill in the brackets. Paste its reply into Chat history and enter your goal separately.</p>
+      <label class="sr-only" for="formatPrompt">Chat formatting prompt</label>
+      <textarea class="textarea help-prompt" id="formatPrompt" readonly spellcheck="false">Format the chat below for Text Gambit. My name or sender label is [your name].
+
+Start each message on a new line. Label my messages Me: and the other person's messages with their name followed by a colon. Use the same two labels throughout, like this:
+
+Me: Want to get coffee Saturday?
+Alice: Sure, how about 2?
+
+Keep the messages in order and preserve their wording and emoji. Indent any continuation line with two spaces. Leave out timestamps, export headers, and the goal.
+
+Output only the formatted chat as plain text. Do not add Markdown, bold, italics, bullets, headings, code fences, or explanations.
+
+Chat to format:
+[paste your chat here]</textarea>
+      <div class="help-actions">
+        <button type="button" class="btn" id="copyPrompt">Copy prompt</button>
+        <span id="copyStatus" role="status"></span>
+      </div>
+    </dialog>
     <template id="theoryIcon">
       <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M12 6c-3-2-6-2.5-9-1.5v13c3-1 6-.5 9 1.5 3-2 6-2.5 9-1.5v-13c-3-1-6-.5-9 1.5v13"/>

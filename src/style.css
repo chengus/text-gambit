@@ -364,13 +364,38 @@ header { border-bottom: 1px solid #ffffff14; }
 
 .speech p { margin: 0; font-size: 14px; }
 
+.help-toggle {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: 2;
+  border-radius: 999px;
+  min-height: 44px;
+  padding-inline: 17px;
+}
+
+.help-dialog {
+  width: min(560px, calc(100% - 24px));
+  max-height: calc(100dvh - 24px);
+  padding: 18px;
+  color: var(--ink);
+}
+
+.help-dialog::backdrop { background: #0009; }
+.help-head, .help-actions { display: flex; align-items: center; gap: 10px; }
+.help-head { justify-content: space-between; }
+.help-head h2 { margin: 0; font-size: 18px; }
+.help-dialog p { margin: 10px 0; color: var(--muted); font-size: 13px; }
+.help-prompt { height: clamp(150px, 44dvh, 350px); resize: none; font-size: 13px; }
+.help-actions { flex-wrap: wrap; margin-top: 12px; font-size: 12px; }
+
 @media (min-width: 760px) {
   .layout {
     grid-template-columns: minmax(220px, .4fr) minmax(0, 1fr);
     align-items: stretch;
   }
 
-  .textarea { height: clamp(120px, calc(100dvh - 350px), 320px); }
+  .compose .textarea { height: clamp(120px, calc(100dvh - 350px), 320px); }
 
   /* The compose card sizes the row. Messages scroll inside the matching analysis card. */
   .analysis { position: relative; min-width: 0; }
@@ -391,6 +416,7 @@ header { border-bottom: 1px solid #ffffff14; }
 
 @media (max-width: 680px) {
   .wrap { padding-inline: 12px; }
+  .layout { padding-bottom: 68px; }
   .replay-layout { grid-template-columns: 32px minmax(0, 1fr); gap: 9px; padding: 10px; }
   .vertical-progress { width: 16px; }
   .conversation { grid-template-rows: auto 235px auto; }
