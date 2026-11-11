@@ -265,11 +265,18 @@ Before answering, check the count, IDs, and grade categories.`;
     }
   } catch (cause) {
     const safeCode = (value) => typeof value === "string" && /^[A-Za-z0-9_]{1,80}$/.test(value) ? value : undefined;
+    const safeMessage = (value) => typeof value === "string"
+      ? value.replace(/\bBearer\s+\S+/gi, "Bearer [redacted]")
+        .replace(/\bsk(?:-or)?-[A-Za-z0-9_-]{8,}/gi, "[redacted]")
+        .slice(0, 240)
+      : undefined;
     const diagnostics = {
       errorName: safeCode(cause?.name),
       errorCode: safeCode(cause?.code),
+      errorMessage: safeMessage(cause?.message),
       causeName: safeCode(cause?.cause?.name),
       causeCode: safeCode(cause?.cause?.code),
+      causeMessage: safeMessage(cause?.cause?.message),
       upstreamStatus: upstreamStatus ?? null,
       timedOut: signal.aborted,
     };
