@@ -265,14 +265,15 @@ Before answering, check the count, IDs, and grade categories.`;
     }
   } catch (cause) {
     const safeCode = (value) => typeof value === "string" && /^[A-Za-z0-9_]{1,80}$/.test(value) ? value : undefined;
-    console.error("OpenRouter request failed before a valid review was received", {
+    const diagnostics = {
       errorName: safeCode(cause?.name),
       errorCode: safeCode(cause?.code),
       causeName: safeCode(cause?.cause?.name),
       causeCode: safeCode(cause?.cause?.code),
       upstreamStatus: upstreamStatus ?? null,
       timedOut: signal.aborted,
-    });
+    };
+    console.error(`OpenRouter request failed: ${JSON.stringify(diagnostics)}`);
     if (signal.aborted) return openRouterError(504);
     return error("The connection to OpenRouter failed. Check the server's network connection and try again.", 502);
   }
