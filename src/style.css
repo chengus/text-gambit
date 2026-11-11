@@ -96,15 +96,13 @@ header { border-bottom: 1px solid #ffffff14; }
 .textarea { min-height: 88px; resize: vertical; }
 .goal-input::placeholder, .textarea::placeholder { color: var(--muted); }
 
-.format, .privacy, .loading, .error {
+.format, .loading, .error {
   margin-top: 7px;
   color: var(--muted);
   font-size: 12px;
 }
 
 .format b { color: var(--ink); }
-.privacy { display: flex; gap: 6px; font-size: 11px; }
-.privacy span { color: var(--blue); }
 .error { color: var(--red); }
 .error:empty { display: none; }
 

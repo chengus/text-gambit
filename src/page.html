@@ -21,15 +21,11 @@
           <label class="field-label" for="goalInput">Goal</label>
           <input class="goal-input" id="goalInput" type="text" placeholder="What do you want to achieve?">
           <label class="field-label" for="transcript">Chat history</label>
-          <textarea class="textarea" id="transcript" aria-describedby="format privacy" placeholder="Paste your chat history here" spellcheck="false"></textarea>
+          <textarea class="textarea" id="transcript" aria-describedby="format" placeholder="Paste your chat history here" spellcheck="false"></textarea>
           <div class="format" id="format">Start each message with a name, like <b>Me:</b> or <b>Alice:</b>.</div>
           <div class="actions">
             <button class="btn" id="analyze">Analyze <span aria-hidden="true">↗</span></button>
             <button class="btn secondary" id="reset">Try sample</button>
-          </div>
-          <div class="privacy">
-            <span aria-hidden="true">◆</span>
-            <div id="privacy">Analysis sends your text to OpenRouter and the model provider it selects.</div>
           </div>
           <div class="loading" id="loading" role="status" hidden>Analyzing…</div>
           <div class="error" id="error" role="alert"></div>

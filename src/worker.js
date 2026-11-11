@@ -94,6 +94,7 @@ Evaluate each message using the goal and the conversation only through that mess
 Grade the goal speaker's decisions as ${QUALITY.join(", ")}. Use Theory for a textbook move that fits a familiar situation, such as a clear, low-pressure invitation. An appropriate decision can be Best even if the outcome is unfavorable. Reserve Brilliant and Blunder for exceptional choices and consequential mistakes.
 For the other speaker, use Signal, No change, Ambiguous, Declined, or Goal reached. Describe observable evidence without inferring hidden intent.
 For each message, score how much of the stated goal has been achieved so far. Use any integer from 0 to 100. Use 0 when the goal clearly fails, even if earlier messages made progress, and 100 only when the goal is achieved. Use 1–99 while the outcome is still open, with 1 for no progress yet. Avoid rounding to preset milestones or multiples of five. Base each change on what the latest message adds: small developments can move the score a few points, setbacks can lower it, and no new evidence should leave it unchanged. The score measures observed progress, never probability. Goal reached requires a progress score of 100.
+Goal reached refers only to the stated goal speaker's goal. An outcome that satisfies the other speaker but contradicts the stated goal is not Goal reached; use Declined when that speaker clearly rejects the goal.
 Write the rationale as one short sentence, ideally 8–14 words and at most ${MAX_COMMENTARY_LENGTH} characters. Sound like a playful chess commentator calling the move live: name what helped or hurt the goal, with a light quip when it fits. Use plain text with no stage directions or extra advice. Joke about the move, and be gentle about refusals or sensitive situations.`;
 
 function shortCommentary(value) {
@@ -199,8 +200,12 @@ Each entry must have "id", "grade", "progress", and "rationale". For example, on
 Before answering, check the count, IDs, and grade categories.`;
   const signal = AbortSignal.timeout(model.endsWith(":floor") ? 120_000 : 45_000);
   let jsonMode = true;
+  let previousFailure = "";
   try {
-    for (let attempt = 0; attempt < 2; attempt++) {
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const attemptInstructions = previousFailure
+        ? `${reviewInstructions}\nYour previous response failed validation: ${previousFailure}. Return a corrected JSON object with every message, in order, and check every grade, progress value, and rationale against the rules before answering.`
+        : reviewInstructions;
       const upstream = await fetch(
         "https://openrouter.ai/api/v1/chat/completions",
         {
@@ -214,7 +219,7 @@ Before answering, check the count, IDs, and grade categories.`;
             ...(useDeepSeekReviewModel && { reasoning: { effort: "none" } }),
             ...(jsonMode && { response_format: { type: "json_object" } }),
             messages: [
-              { role: "system", content: reviewInstructions },
+              { role: "system", content: attemptInstructions },
               { role: "user", content: JSON.stringify(input) },
             ],
           }),
@@ -244,11 +249,16 @@ Before answering, check the count, IDs, and grade categories.`;
       }
       const content = choice?.message?.content;
       try {
-        const text = typeof content === "string" ? content.trim() : "";
+        const text = typeof content === "string"
+          ? content.trim()
+          : Array.isArray(content)
+            ? content.filter((part) => part?.type === "text" && typeof part.text === "string")
+              .map((part) => part.text).join("\n").trim()
+            : "";
         const fenced = text.match(/^```(?:json)?\s*([\s\S]+?)\s*```$/i);
         return json(validateReview(JSON.parse(fenced?.[1] ?? text), input));
-      } catch {
-        // Retry once if the model returns an incomplete or invalid review.
+      } catch (cause) {
+        previousFailure = cause.message || "The response was not valid JSON.";
       }
     }
   } catch {
