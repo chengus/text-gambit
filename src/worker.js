@@ -201,6 +201,7 @@ Before answering, check the count, IDs, and grade categories.`;
   const signal = AbortSignal.timeout(model.endsWith(":floor") ? 120_000 : 45_000);
   let jsonMode = true;
   let previousFailure = "";
+  let upstreamStatus;
   try {
     for (let attempt = 0; attempt < 3; attempt++) {
       const attemptInstructions = previousFailure
@@ -225,6 +226,7 @@ Before answering, check the count, IDs, and grade categories.`;
           }),
         },
       );
+      upstreamStatus = upstream.status;
       const payload = await upstream.json().catch((cause) => {
         if (cause instanceof SyntaxError) return null;
         throw cause;
@@ -261,7 +263,16 @@ Before answering, check the count, IDs, and grade categories.`;
         previousFailure = cause.message || "The response was not valid JSON.";
       }
     }
-  } catch {
+  } catch (cause) {
+    const safeCode = (value) => typeof value === "string" && /^[A-Za-z0-9_]{1,80}$/.test(value) ? value : undefined;
+    console.error("OpenRouter request failed before a valid review was received", {
+      errorName: safeCode(cause?.name),
+      errorCode: safeCode(cause?.code),
+      causeName: safeCode(cause?.cause?.name),
+      causeCode: safeCode(cause?.cause?.code),
+      upstreamStatus: upstreamStatus ?? null,
+      timedOut: signal.aborted,
+    });
     if (signal.aborted) return openRouterError(504);
     return error("The connection to OpenRouter failed. Check the server's network connection and try again.", 502);
   }
