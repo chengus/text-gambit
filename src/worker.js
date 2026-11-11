@@ -211,7 +211,8 @@ Before answering, check the count, IDs, and grade categories.`;
         "https://openrouter.ai/api/v1/chat/completions",
         {
           method: "POST",
-          redirect: "error",
+          // Workers don't implement redirect: "error"; manual mode keeps credentials from following redirects.
+          redirect: "manual",
           signal,
           headers: { authorization: `Bearer ${key}`, "content-type": "application/json" },
           body: JSON.stringify({
@@ -227,6 +228,9 @@ Before answering, check the count, IDs, and grade categories.`;
         },
       );
       upstreamStatus = upstream.status;
+      if (upstream.status >= 300 && upstream.status < 400) {
+        return error("OpenRouter returned an unexpected redirect. Try again later.", 502);
+      }
       const payload = await upstream.json().catch((cause) => {
         if (cause instanceof SyntaxError) return null;
         throw cause;
